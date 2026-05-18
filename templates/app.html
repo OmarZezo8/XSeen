@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xseen - Exoplanet AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+
+    <header class="main-header">
+        <nav class="main-nav">
+            <a href="/" class="logo">
+                <img src="{{ url_for('static', filename='Logo.png') }}" alt="Xseen Logo">
+                <span>Xseen</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="/">Xseen-net</a></li>
+                <li><a href="/documentation">Documentation</a></li>
+                <li><a href="/classification">Classification</a></li>
+                <li><a href="/contact">Contact Us</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main id="chat-container" class="chat-container">
+        <div id="welcome-screen-wrapper">
+            <!-- Welcome screen will be injected by JS -->
+        </div>
+        <!-- Chat messages will be injected here -->
+    </main>
+
+    <footer class="chat-footer">
+        <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Ask about exoplanets...">
+            <button id="send-button">Send</button>
+        </div>
+        <p class="disclaimer">AI can make mistakes. Verify important information.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Page loaded');
+
+            const navLinks = document.querySelectorAll('.nav-links a');
+            const currentPath = window.location.pathname;
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+
+            const chatContainer = document.getElementById('chat-container');
+            const chatInput = document.getElementById('chat-input');
+            const sendButton = document.getElementById('send-button');
+            const welcomeWrapper = document.getElementById('welcome-screen-wrapper');
+
+            const renderWelcome = () => {
+                welcomeWrapper.innerHTML = `
+                    <div class="welcome-screen">
+                        <img src="/static/Logo.png" alt="Xseen Logo">
+                        <h1>Xseen-net - Your Exoplanet AI Assistant</h1>
+                        <p>Ask me anything about exoplanets, detection methods, and discoveries.</p>
+                        <div class="suggestion-grid">
+                            <div class="suggestion-card" data-suggestion="What is the transit method for detecting exoplanets?">What is the transit method for detecting exoplanets?</div>
+                            <div class="suggestion-card" data-suggestion="What are hot Jupiters?">What are hot Jupiters?</div>
+                            <div class="suggestion-card" data-suggestion="How do we determine if an exoplanet is habitable?">How do we determine if an exoplanet is habitable?</div>
+                            <div class="suggestion-card" data-suggestion="What is the Kepler mission?">What is the Kepler mission?</div>
+                        </div>
+                    </div>
+                `;
+            };
+
+            const addMessage = (role, content) => {
+                const typingIndicator = document.querySelector('.message.typing');
+                if (typingIndicator) {
+                    typingIndicator.remove();
+                }
+
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${role}`;
+                
+                const avatarIcon = role === 'user' ? '<i class="fa-solid fa-user"></i>' : '<i class="fa-solid fa-robot"></i>';
+                let contentHTML;
+
+                if (role === 'typing') {
+                    contentHTML = content;
+                } else if (role === 'assistant') {
+                    contentHTML = marked.parse(content);
+                } else {
+                    contentHTML = `<p>${content}</p>`;
+                }
+                
+                messageDiv.innerHTML = `
+                    <div class="avatar">${avatarIcon}</div>
+                    <div class="content">${contentHTML}</div>
+                `;
+                chatContainer.appendChild(messageDiv);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            };
+
+            const showTypingIndicator = () => {
+                const typingIndicator = document.createElement('div');
+                typingIndicator.className = 'message assistant typing';
+                typingIndicator.innerHTML = `
+                    <div class="avatar"><i class="fa-solid fa-robot"></i></div>
+                    <div class="content">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                `;
+                chatContainer.appendChild(typingIndicator);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            };
+
+            const handleSend = () => {
+                const query = chatInput.value.trim();
+                if (!query) return;
+
+                const welcomeScreen = document.getElementById('welcome-screen-wrapper');
+                if (welcomeScreen) {
+                    welcomeScreen.style.display = 'none';
+                }
+
+                addMessage('user', query);
+                chatInput.value = '';
+                showTypingIndicator();
+
+                fetch('/xeno', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: query }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        addMessage('assistant', `Error: ${data.error}`);
+                    } else {
+                        addMessage('assistant', data.response);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    addMessage('assistant', 'Sorry, I am having trouble connecting to the server.');
+                });
+            };
+
+            sendButton.addEventListener('click', handleSend);
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleSend();
+            });
+
+            chatContainer.addEventListener('click', (e) => {
+                const suggestionCard = e.target.closest('.suggestion-card');
+                if (suggestionCard) {
+                    const suggestion = suggestionCard.dataset.suggestion;
+                    chatInput.value = suggestion;
+                    handleSend();
+                }
+            });
+
+            if (chatContainer) {
+                renderWelcome();
+            }
+        });
+    </script>
+</body>
+</html>

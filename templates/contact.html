@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Xseen</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <nav class="main-nav">
+            <a href="/" class="logo">
+                <img src="{{ url_for('static', filename='Logo.png') }}" alt="Xseen Logo">
+                <span>Xseen</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="/">Xseen-net</a></li>
+                <li><a href="/documentation">Documentation</a></li>
+                <li><a href="/classification">Classification</a></li>
+                <li><a href="/contact">Contact Us</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="page-container">
+        <div class="page-header">
+            <h1>Contact Us</h1>
+            <p>Have questions or want to collaborate? We'd love to hear from you.</p>
+        </div>
+
+        <div class="contact-grid">
+            <div class="contact-info">
+                <h2>Get in Touch</h2>
+                <p>Our team is here to help and answer any questions you might have. We look forward to hearing from you.</p>
+                <ul>
+                    <li><i class="fa-solid fa-envelope"></i> <div><strong>Email</strong><br><a href="mailto:XseenOffice@gmail.com">XseenOffice@gmail.com</a></div></li>
+                    <li><i class="fa-solid fa-phone"></i> <div><strong>Phone</strong><br>+20 1*********</div></li>
+                    <li><i class="fa-solid fa-clock"></i> <div><strong>Office Hours</strong><br>Sun-Thu: 9am-6pm</div></li>
+                </ul>
+            </div>
+
+            <form id="contact-form" class="contact-form">
+                <h2>Send us a Message</h2>
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" placeholder="Your name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="your.email@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="subject">Subject</label>
+                    <input type="text" id="subject" name="subject" placeholder="How can we help?" required>
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" rows="5" placeholder="Your message here..." required></textarea>
+                </div>
+                <button type="submit" class="submit-button">Send Message</button>
+            </form>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

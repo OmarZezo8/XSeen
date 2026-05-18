@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exoplanet Classification - Xseen</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <header class="main-header">
+        <nav class="main-nav">
+            <a href="/" class="logo">
+                <img src="{{ url_for('static', filename='Logo.png') }}" alt="Xseen Logo">
+                <span>Xseen</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="/">Xseen-net</a></li>
+                <li><a href="/documentation">Documentation</a></li>
+                <li><a href="/classification" class="active">Classification</a></li>
+                <li><a href="/contact">Contact Us</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="page-container">
+        <div class="page-header">
+            <h1>Exoplanet Classification</h1>
+            <p>Enter exoplanet parameters to analyze habitability and classify the exoplanet.</p>
+        </div>
+
+        <form id="classification-form" class="classification-form">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="orbitalPeriod">Orbital Period (days)</label>
+                    <input type="number" id="orbitalPeriod" name="orbitalPeriod" step="any" min="0" placeholder="e.g., 365.25" required>
+                </div>
+                <div class="form-group">
+                    <label for="planetRadius">Planet Radius (Earth Radii)</label>
+                    <input type="number" id="planetRadius" name="planetRadius" step="any" min="0" placeholder="e.g., 1.0" required>
+                </div>
+                <div class="form-group">
+                    <label for="impactParameter">Impact Parameter</label>
+                    <input type="number" id="impactParameter" name="impactParameter" step="any" min="0" placeholder="e.g., 0.5" required>
+                </div>
+                <div class="form-group">
+                    <label for="transitDuration">Transit Duration (hours)</label>
+                    <input type="number" id="transitDuration" name="transitDuration" step="any" min="0" placeholder="e.g., 2.5" required>
+                </div>
+                <div class="form-group">
+                    <label for="transitDepth">Transit Depth (%)</label>
+                    <input type="number" id="transitDepth" name="transitDepth" step="any" min="0" placeholder="e.g., 0.8" required>
+                </div>
+                <div class="form-group">
+                    <label for="signalToNoise">Signal to Noise Ratio</label>
+                    <input type="number" id="signalToNoise" name="signalToNoise" step="any" min="0" placeholder="e.g., 100.0" required>
+                </div>
+            </div>
+            <button type="submit" class="submit-button">Test</button>
+        </form>
+
+        <section id="results-section" class="results-section hidden">
+            <h2>Classification Results</h2>
+            <div class="results-grid">
+                <div class="result-card">
+                    <h3>Classification</h3>
+                    <p id="result-type" style="font-size: 24px; font-weight: bold; margin: 10px 0;">-</p>
+                    <p id="result-description" style="margin-top: 15px; color: var(--text-secondary);">-</p>
+                </div>
+            </div>
+
+            <div class="earth-comparison-section">
+                <h2>Earth Similarity Analysis</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 20px;">Compare each property to Earth's values</p>
+                <div id="earth-comparison" class="comparison-grid">
+                    <!-- Similarity bars will be inserted here by JavaScript -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('classification-form');
+            const resultsSection = document.getElementById('results-section');
+            const resultType = document.getElementById('result-type');
+            const resultDescription = document.getElementById('result-description');
+            const submitButton = form.querySelector('.submit-button');
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                // Get form data
+                const formData = {
+                    orbitalPeriod: document.getElementById('orbitalPeriod').value,
+                    planetRadius: document.getElementById('planetRadius').value,
+                    impactParameter: document.getElementById('impactParameter').value,
+                    transitDuration: document.getElementById('transitDuration').value,
+                    transitDepth: document.getElementById('transitDepth').value,
+                    signalToNoise: document.getElementById('signalToNoise').value
+                };
+
+                console.log('Sending data:', formData);
+
+                // Show loading state
+                submitButton.textContent = 'Testing...';
+                submitButton.disabled = true;
+
+                try {
+                    // Send to backend
+                    const response = await fetch('/classify', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData),
+                    });
+
+                    const data = await response.json();
+                    console.log('Received data:', data);
+
+                    if (data.error) {
+                        alert(`Classification Error:\n\n${data.error}\n\nPlease check:\n- All fields are filled\n- Values are valid numbers\n- Server is running`);
+                        console.error('Server error:', data.error);
+                    } else {
+                        // Display results
+                        resultType.textContent = data.result_type;
+                        resultDescription.textContent = data.description;
+                        
+                        // Display Earth similarity comparison
+                        displayEarthComparison(data.earth_comparison);
+                        
+                        // Show results section with animation
+                        resultsSection.classList.remove('hidden');
+                        resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                } catch (error) {
+                    console.error('Full error:', error);
+                    alert(`Network Error:\n\nFailed to connect to the server.\n\nPlease check:\n- Flask server is running\n- No firewall blocking the connection\n\nError details: ${error.message}`);
+                } finally {
+                    // Reset button
+                    submitButton.textContent = 'Test';
+                    submitButton.disabled = false;
+                }
+            });
+
+            function displayEarthComparison(comparison) {
+                const container = document.getElementById('earth-comparison');
+                container.innerHTML = '';
+
+                const propertyLabels = {
+                    'orbitalPeriod': 'Orbital Period',
+                    'planetRadius': 'Planet Radius',
+                    'impactParameter': 'Impact Parameter',
+                    'transitDuration': 'Transit Duration',
+                    'transitDepth': 'Transit Depth',
+                    'signalToNoise': 'Signal to Noise'
+                };
+
+                for (const [key, data] of Object.entries(comparison)) {
+                    const similarityCard = document.createElement('div');
+                    similarityCard.className = 'similarity-card';
+                    
+                    const similarity = data.similarity;
+                    const barColor = similarity >= 75 ? '#4CAF50' : 
+                                    similarity >= 50 ? '#FFC107' : 
+                                    similarity >= 25 ? '#FF9800' : '#F44336';
+                    
+                    // Special handling for Planet Radius - show size comparison with illustration
+                    if (key === 'planetRadius') {
+                        const radiusMultiple = (data.value / data.earthValue).toFixed(2);
+                        const maxDisplaySize = 200; // Max width/height for the larger planet
+                        let planetSize, earthSize;
+
+                        if (data.value >= data.earthValue) {
+                            // Exoplanet is larger or same size
+                            planetSize = maxDisplaySize;
+                            earthSize = (data.earthValue / data.value) * maxDisplaySize;
+                        } else {
+                            // Earth is larger
+                            earthSize = maxDisplaySize;
+                            planetSize = (data.value / data.earthValue) * maxDisplaySize;
+                        }
+                        
+                        similarityCard.innerHTML = `
+                            <div class="similarity-header">
+                                <h4>${propertyLabels[key]}</h4>
+                                <span class="similarity-percentage">${similarity}%</span>
+                            </div>
+                            <div class="size-comparison-text">
+                                <strong style="font-size: 20px; color: var(--accent-blue);">${radiusMultiple}x</strong> the size of Earth
+                            </div>
+                            <div class="planet-illustration">
+                                <div class="planet-visual">
+                                    <div class="planet earth" style="width: ${earthSize}px; height: ${earthSize}px;">
+                                        <span class="planet-label">Earth</span>
+                                    </div>
+                                    <div class="planet exoplanet" style="width: ${planetSize}px; height: ${planetSize}px;">
+                                        <span class="planet-label">Your Planet</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="similarity-values">
+                                <span>Your Value: ${data.value} Earth Radii</span>
+                                <span>Earth Value: ${data.earthValue} Earth Radii</span>
+                            </div>
+                        `;
+                    } else {
+                        // Standard bar display for other properties
+                        similarityCard.innerHTML = `
+                            <div class="similarity-header">
+                                <h4>${propertyLabels[key]}</h4>
+                                <span class="similarity-percentage">${similarity}%</span>
+                            </div>
+                            <div class="similarity-bar-container">
+                                <div class="similarity-bar" style="width: ${similarity}%; background-color: ${barColor};"></div>
+                            </div>
+                            <div class="similarity-values">
+                                <span>Your Value: ${data.value}</span>
+                                <span>Earth Value: ${data.earthValue}</span>
+                            </div>
+                        `;
+                    }
+                    
+                    container.appendChild(similarityCard);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

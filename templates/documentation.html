@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation - Xseen</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <header class="main-header">
+        <nav class="main-nav">
+            <a href="/" class="logo">
+                <img src="{{ url_for('static', filename='Logo.png') }}" alt="Xseen Logo">
+                <span>Xseen</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="/">Xseen-net</a></li>
+                <li><a href="/documentation" class="active">Documentation</a></li>
+                <li><a href="/classification">Classification</a></li>
+                <li><a href="/contact">Contact Us</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="page-container">
+        <div class="page-header">
+            <h1>Documentation</h1>
+            <p>A comprehensive guide to using and understanding the Xseen AI system.</p>
+        </div>
+
+        <section class="doc-section">
+            <h2>The Transit Method: Detecting Shadows of Distant Worlds</h2>
+            <p>The transit method is one of the most successful techniques for discovering exoplanets. It works by monitoring the brightness of a star over time. If a planet's orbit is aligned just right, it will pass in front of its star from our point of view, causing a small, temporary dip in the star's brightness. This event is called a transit. By studying the timing and depth of these transits, astronomers can deduce a wealth of information about the planet, including its size and orbital period.</p>
+        </section>
+
+        <section class="doc-section">
+            <h2>Understanding the Classification Parameters</h2>
+            <p>The exoplanet classification tool uses several key parameters derived from transit data to assess a planet's characteristics and potential habitability. Here's what each one means:</p>
+            <ul>
+                <li><strong>Orbital Period (days):</strong> The time it takes for the planet to complete one full orbit around its star.</li>
+                <li><strong>Planet Radius (Earth Radii):</strong> The size of the planet compared to Earth.</li>
+                <li><strong>Impact Parameter:</strong> This measures how centrally the planet transits its star.</li>
+                <li><strong>Transit Duration (hours):</strong> The length of time the transit lasts.</li>
+                <li><strong>Transit Depth (%):</strong> The percentage by which the star's light dims during a transit.</li>
+                <li><strong>Signal to Noise Ratio (SNR):</strong> A measure of the strength and clarity of the transit signal.</li>
+            </ul>
+        </section>
+
+        <section class="doc-section">
+            <h2>The Random Forest Classification Model</h2>
+            <p>The Random Forest algorithm is an ensemble learning method that combines many decision trees to make more accurate and reliable predictions. Instead of relying on a single tree—which might make mistakes or overfit—the Random Forest builds multiple trees, each trained on different random parts of the data and features.</p>
+            
+            <p><strong>When making a prediction:</strong></p>
+            <ul>
+                <li>Each tree gives its own result (for example, whether the object is an exoplanet or not).</li>
+                <li>The forest then takes a majority vote from all trees, giving the final, more stable prediction.</li>
+            </ul>
+            
+            <p>This randomness helps the model learn diverse patterns in the data, reducing errors and preventing overfitting. Because of this, Random Forests are very effective for complex scientific problems like exoplanet detection, where the data may be noisy or unbalanced.</p>
+        </section>
+
+        <section class="doc-section">
+            <h2>Model Architecture</h2>
+            <p>Our Random Forest classifier is configured with the following parameters for optimal exoplanet detection:</p>
+            
+            <pre style="background-color: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; overflow-x: auto;">clf = RandomForestClassifier(
+    n_estimators=3000,
+    max_depth=450,
+    class_weight="balanced",
+    random_state=42
+)</pre>
+            
+            <h3>Parameter Explanations:</h3>
+            <ul>
+                <li><strong>n_estimators=3000:</strong> The number of decision trees in the forest. With 3000 trees, the model can capture diverse patterns and make highly reliable predictions through majority voting.</li>
+                <li><strong>max_depth=450:</strong> Limits the maximum depth of each tree. This controls how complex each tree can become, preventing overfitting while still allowing the model to learn intricate patterns in the exoplanet data.</li>
+                <li><strong>class_weight="balanced":</strong> Automatically adjusts weights to handle imbalanced classes. Since exoplanet datasets often have unequal numbers of confirmed planets versus false positives, this ensures the model doesn't favor the majority class.</li>
+                <li><strong>random_state=42:</strong> Sets a fixed random seed for reproducibility, ensuring consistent results across different runs of the model.</li>
+            </ul>
+            
+            <div style="margin-top: 25px; text-align: center;">
+                <a href="https://drive.google.com/file/d/19reeOblAqZlp4B9ao-5ZrXn2_LTNjiKa/view?usp=drive_link" target="_blank" class="submit-button" style="text-decoration: none; display: inline-block; width: auto;">
+                    Download The Model (model.pkl)
+                </a>
+                <p style="font-size: 14px; color: var(--text-secondary); margin-top: 10px;">The model is open-source. Feel free to use it in your own projects.</p>
+            </div>
+        </section>
+
+    </main>
+
+</body>
+</html>
