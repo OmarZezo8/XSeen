@@ -1,10 +1,10 @@
-# Xseen - Exoplanet AI Assistant
+# Xseen - PLATFORM FOR EXOPLANETS DISCOVERY
 
 Xseen is a web-based AI-powered platform for exoplanet exploration and classification. It combines machine learning with conversational AI to help users learn about exoplanets, detection methods, and classify potential exoplanet candidates.
 
 ## Features
 
-- **Xseen-net AI Assistant**: An intelligent chatbot powered by Groq's Llama model that provides accurate information about exoplanets, detection methods, planetary characteristics, space missions, and astronomical discoveries
+- **XSeen-net AI Assistant**: An intelligent chatbot powered by Groq's Llama model that provides accurate information about exoplanets, detection methods, planetary characteristics, space missions, and astronomical discoveries
 - **Exoplanet Classification**: A machine learning tool that classifies celestial objects as exoplanets, candidates, or non-exoplanets based on transit photometry data
 - **Earth Comparison**: Compare exoplanet characteristics with Earth's values to assess similarity
 - **Interactive Documentation**: Comprehensive documentation about exoplanets and the platform
@@ -72,6 +72,7 @@ The required packages are:
 4. **Ensure model.pkl is present**:
    - The `model.pkl` file contains the pre-trained classification model
    - This file is large (~780MB) and should be in the project root directory
+   - You can get the model file from this link 
 
 ## Usage
 
