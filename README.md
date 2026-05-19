@@ -72,7 +72,7 @@ The required packages are:
 4. **Ensure model.pkl is present**:
    - The `model.pkl` file contains the pre-trained classification model
    - This file is large (~780MB) and should be in the project root directory
-   - You can get the model file from this link 
+   - You can get the model file from this link https://drive.google.com/drive/folders/1SsuxdIalEoDmyoSCwlLzDnYXVeyCQ6Es?usp=sharing
 
 ## Usage
 
